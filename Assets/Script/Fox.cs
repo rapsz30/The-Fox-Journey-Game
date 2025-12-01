@@ -32,7 +32,7 @@ public class Fox : MonoBehaviour
 
         // Running (speed only, no anim)
         if (Input.GetKey(KeyCode.LeftShift))
-            moveSpeed = 10f;
+            moveSpeed = 7f;
         else
             moveSpeed = 5f;
 
