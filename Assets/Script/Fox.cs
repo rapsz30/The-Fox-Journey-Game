@@ -74,22 +74,41 @@ public class Fox : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D col)
+{
+    // Cek tabrakan dengan musuh (Frog)
+    if (col.gameObject.CompareTag("Enemy")) 
     {
-        if (col.gameObject.name.Equals("Frog"))
-            healthPoints-= 1;
-
-        if (col.gameObject.name.Equals("Frog") && healthPoints > 0)
+        // PENTING: Untuk identifikasi yang lebih baik di masa depan,
+        // gunakan TAG "Enemy" di Unity daripada membandingkan nama "Frog".
+        
+        healthPoints -= 1;
+        
+        if (healthPoints > 0)
         {
+            // Jika masih hidup setelah ditabrak Frog
             anim.SetTrigger("isHurting");
             StartCoroutine("Hurt");
         }
         else
         {
+            // Jika HP habis (Mati)
             dirX = 0;
             isHurting = true;
             anim.SetTrigger("isHurting");
+            // Tambahkan logika kematian di sini (Destroy, GameOver, dll.)
         }
     }
+
+    // Cek tabrakan dengan item koleksi (Cherry)
+    // Script Cherry akan menangani apa yang terjadi pada Cherry, 
+    // Fox hanya perlu mengabaikan tabrakan ini agar tidak memicu logika Hurt.
+    if (col.gameObject.CompareTag("Collectable"))
+    {
+        // Tidak perlu melakukan apa-apa di skrip Fox, 
+        // karena skrip Cherry sudah menangani 'collect' (dengan asumsi script Cherry bekerja)
+        return; 
+    }
+}
 
     IEnumerator Hurt()
     {
