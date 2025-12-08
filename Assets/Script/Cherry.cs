@@ -6,10 +6,19 @@ public class Cherry : MonoBehaviour
     bool collected = false;
     Collider2D col;
 
+    // Tambahkan referensi ke Game Manager
+    public GameManager gameManager; 
+
     void Start()
     {
         anim = GetComponent<Animator>();
         col = GetComponent<Collider2D>(); // collider di object ini
+        
+        // Coba cari GameManager secara otomatis
+        if (gameManager == null)
+        {
+            gameManager = FindObjectOfType<GameManager>();
+        }
     }
 
     // Di Cherry.cs:
@@ -23,8 +32,13 @@ public class Cherry : MonoBehaviour
             Debug.Log("Collected!");
             col.enabled = false;
 
-            // UBAH: Menggunakan nama Trigger 'collect' (sesuai diskusi sebelumnya)
-            // PASTIKAN NAMA TRIGGER INI SAMA DENGAN NAMA PARAMETER DI ANIMATOR
+            // Panggil UI Manager untuk menambah score
+            if (gameManager != null)
+            {
+                gameManager.AddScore(10); // Tambah 1 poin
+            }
+
+            // Panggil Trigger animasi collect
             anim.SetTrigger("collect"); 
 
             Destroy(gameObject, 0.4f);

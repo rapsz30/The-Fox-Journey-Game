@@ -9,6 +9,9 @@ public class Fox : MonoBehaviour
     float dirX;
     float moveSpeed = 5f;
 
+    // Tambahkan referensi ke Game Manager
+    public GameManager gameManager; 
+    
     // Fox Health (3 Nyawa)
     int healthPoints = 3;
     bool isHurting;
@@ -20,6 +23,12 @@ public class Fox : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         localScale = transform.localScale;
+
+        // Inisialisasi awal Life UI (3 nyawa)
+        if (gameManager != null)
+        {
+            gameManager.UpdateHealthUI(healthPoints);
+        }
     }
 
     void Update()
@@ -83,7 +92,6 @@ public class Fox : MonoBehaviour
         if (col.gameObject.CompareTag("Enemy"))
         {
             // 1. Pencegahan Re-hit/Tumpang Tindih:
-            // Jika Fox sedang dalam status isHurting (masa kebal) atau mati, JANGAN lakukan apa-apa.
             if (isHurting || healthPoints <= 0) return;
 
             // 2. Kurangi nyawa
@@ -93,8 +101,13 @@ public class Fox : MonoBehaviour
             {
                 // Fox Terluka
                 anim.SetTrigger("isHurting");
-                // Panggil Coroutine dengan referensi metode yang aman
                 StartCoroutine(Hurt());
+
+                // Panggil UI Manager untuk update Life
+                if (gameManager != null)
+                {
+                    gameManager.UpdateHealthUI(healthPoints);
+                }
             }
             else // Fox Mati (healthPoints <= 0)
             {
@@ -102,11 +115,18 @@ public class Fox : MonoBehaviour
                 dirX = 0;
                 isHurting = true;
                 StopAllCoroutines();
+                
+                // Matikan Collider Fox segera
+                GetComponent<Collider2D>().enabled = false; 
 
-                // PASTIKAN BARIS INI TERCAPAI dan TIDAK ADA PANGGILAN HURT() DI SINI
-                anim.SetTrigger("isDeath"); // <-- Harusnya memicu transisi Anda
+                anim.SetTrigger("isDeath"); 
 
-                // Tambahkan kode Game Over di sini.
+                // Panggil UI Manager untuk Game Over
+                if (gameManager != null)
+                {
+                    gameManager.UpdateHealthUI(healthPoints); // Tampilkan 0 life
+                    gameManager.GameOver();
+                }
             }
         }
     }
@@ -117,15 +137,13 @@ public class Fox : MonoBehaviour
         // Cek tabrakan dengan item koleksi (Collectable)
         if (col.gameObject.CompareTag("Collectable"))
         {
-            // Logika collect: skrip Cherry.cs yang akan menghandle animasi dan Destroy
             return;
         }
-        // Catatan: Collider Trigger musuh (untuk stomping) diurus oleh skrip EnemyStomping.cs
+        // Collider Trigger musuh (untuk stomping) diurus oleh EnemyStomping.cs
     }
 
     IEnumerator Hurt()
     {
-        // Awal Coroutine: Aktifkan status terluka
         isHurting = true;
         rb.velocity = Vector2.zero;
 
@@ -138,7 +156,6 @@ public class Fox : MonoBehaviour
         // Tunggu sampai periode kebal (invulnerability) selesai
         yield return new WaitForSeconds(0.5f);
 
-        // Akhir Coroutine: Matikan status terluka
         isHurting = false;
     }
 }
