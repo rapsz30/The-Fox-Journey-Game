@@ -13,10 +13,13 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText; 
     
     // --- VARIABEL PAUSE ---
-    // Seret objek PausePanel (wadah tombol) ke slot ini di Inspector
     public GameObject pausePanel; 
     public GameObject pauseButtonIcon;
     private bool isPaused = false; 
+    
+    // --- VARIABEL GAME OVER BARU ---
+    // Seret objek GameOverPanel (dari Hierarchy) ke slot ini
+    public GameObject gameOverPanel; //
 
     private int score = 0;
 
@@ -28,14 +31,20 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // Mendapatkan referensi MusicButtonController di Start
         musicButtonController = FindObjectOfType<MusicButtonController>();
+        
         // Pastikan UI score terinisialisasi
         UpdateScoreUI();
         
-        // Sembunyikan panel pause di awal
+        // Sembunyikan kedua panel di awal
         if (pausePanel != null)
         {
             pausePanel.SetActive(false);
+        }
+        if (gameOverPanel != null) // <-- LOGIKA BARU
+        {
+            gameOverPanel.SetActive(false);
         }
     }
 
@@ -74,55 +83,78 @@ public class GameManager : MonoBehaviour
     // Dipanggil oleh Button Pause (ikon) dan Button Resume
     public void TogglePause()
     {
-        // Cegah pause saat game sudah Game Over (TimeScale = 0)
-        // Kita hanya toggle jika TimeScale = 1f (berjalan) atau isPaused = true (sedang pause)
+        // Cegah toggle jika sudah Game Over (TimeScale = 0 dan bukan isPaused)
         if (Time.timeScale == 0f && !isPaused) 
         {
-            // Jika game sudah Game Over, jangan tampilkan menu Pause
             return;
         }
 
         isPaused = !isPaused;
 
-    if (isPaused)
-    {
-        // 1. Tampilkan Panel Pause
-        if (pausePanel != null)
+        if (isPaused)
         {
-            pausePanel.SetActive(true);
-        }
-        
-        // 2. Sembunyikan Ikon Pause
-        if (pauseButtonIcon != null) // <-- LOGIKA BARU
-        {
-            pauseButtonIcon.SetActive(false);
-        }
+            // 1. Tampilkan Panel Pause
+            if (pausePanel != null)
+            {
+                pausePanel.SetActive(true);
+            }
+            
+            // 2. Sembunyikan Ikon Pause
+            if (pauseButtonIcon != null) 
+            {
+                pauseButtonIcon.SetActive(false);
+            }
 
-        Time.timeScale = 0f; 
+            Time.timeScale = 0f; 
+        }
+        else
+        {
+            // 1. Sembunyikan Panel Pause
+            if (pausePanel != null)
+            {
+                pausePanel.SetActive(false);
+            }
+            
+            // 2. Tampilkan Ikon Pause
+            if (pauseButtonIcon != null) 
+            {
+                pauseButtonIcon.SetActive(true);
+            }
+            
+            Time.timeScale = 1f; 
+        }
     }
-    else
+
+    // Dipanggil dari skrip Fox.cs saat HP <= 0
+    public void GameOver()
     {
-        // 1. Sembunyikan Panel Pause
-        if (pausePanel != null)
-        {
-            pausePanel.SetActive(false);
-        }
+        Debug.Log("GAME OVER! Fox has died.");
         
-        // 2. Tampilkan Ikon Pause
-        if (pauseButtonIcon != null) // <-- LOGIKA BARU
-        {
-            pauseButtonIcon.SetActive(true);
-        }
+        // 1. Hentikan waktu game (penting agar Fox beku)
+        Time.timeScale = 0f; 
         
-        Time.timeScale = 1f; 
+        // 2. Tampilkan Panel Game Over
+        if (gameOverPanel != null)
+        {
+            // Pastikan panel pause disembunyikan jika Game Over terjadi saat pause
+            if (pausePanel != null && pausePanel.activeSelf)
+            {
+                 pausePanel.SetActive(false);
+            }
+            // Sembunyikan ikon pause di Game Over
+            if (pauseButtonIcon != null)
+            {
+                pauseButtonIcon.SetActive(false);
+            }
+            
+            gameOverPanel.SetActive(true);
+        }
     }
-}
 
     // Dipanggil oleh Button Restart (Di Menu Pause/Game Over)
     public void RestartGame()
     {
         Time.timeScale = 1f; // Reset waktu sebelum pindah scene
-        // Muat ulang scene yang sedang aktif
         SceneManager.LoadScene(SceneManager.GetActiveScene().name); 
     }
 
@@ -138,20 +170,9 @@ public class GameManager : MonoBehaviour
     {
        AudioListener.volume = (AudioListener.volume == 0) ? 1 : 0;
     
-    // Panggil fungsi di skrip tombol untuk update gambar
-    if (musicButtonController != null)
-    {
-        musicButtonController.UpdateSprite(AudioListener.volume > 0);
-    }
-    }
-
-    public void GameOver()
-    {
-        Debug.Log("GAME OVER! Fox has died.");
-        // Hentikan waktu game (membuat game beku/freeze)
-        Time.timeScale = 0f; 
-        
-        // Di sini Anda bisa menambahkan kode untuk menampilkan UI Game Over Panel
-        // Contoh: gameOverPanel.SetActive(true);
+       if (musicButtonController != null)
+       {
+           musicButtonController.UpdateSprite(AudioListener.volume > 0);
+       }
     }
 }
