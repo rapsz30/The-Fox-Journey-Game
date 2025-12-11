@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement; // Tambahkan ini jika Anda menggunakan Restart/Game Over
 
 public class Fox : MonoBehaviour
 {
@@ -9,8 +10,16 @@ public class Fox : MonoBehaviour
     float dirX;
     float moveSpeed = 5f;
 
+    // Variabel Respawn dan Checkpoint
+    private Vector3 respawnPosition; // Posisi Checkpoint terakhir
+    public float deathYCoordinate = -10f; // Batas Y untuk respawn jika jatuh
+    
+    // Variabel Health dan UI
+    public GameManager gameManager; 
     int healthPoints = 3;
     bool isHurting;
+    
+    // Variabel Gerakan
     bool facingRight = true;
     Vector3 localScale;
 
@@ -19,6 +28,15 @@ public class Fox : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         localScale = transform.localScale;
+
+        // 1. SET CHECKPOINT AWAL: Posisi awal adalah checkpoint pertama
+        respawnPosition = transform.position; 
+        
+        // Inisialisasi awal Life UI (3 nyawa)
+        if (gameManager != null)
+        {
+            gameManager.UpdateHealthUI(healthPoints);
+        }
     }
 
     void Update()
@@ -27,7 +45,7 @@ public class Fox : MonoBehaviour
         dirX = Input.GetAxisRaw("Horizontal") * moveSpeed;
 
         // Jump
-        if (Input.GetButtonDown("Jump") && rb.velocity.y == 0)
+        if (Input.GetButtonDown("Jump") && rb.velocity.y == 0 && !isHurting)
             rb.AddForce(Vector2.up * 600f);
 
         // Running (speed only, no anim)
@@ -37,6 +55,17 @@ public class Fox : MonoBehaviour
             moveSpeed = 5f;
 
         SetAnimationState();
+
+        // --- DETEKSI JATUH KE VOID ---
+        if (transform.position.y < deathYCoordinate)
+        {
+            if (healthPoints > 0)
+            {
+                Debug.Log("FALL DETECTED: Memanggil Respawn(). HP sisa: " + (healthPoints - 1));
+                Respawn(); 
+            }
+            // Jika HP <= 0, Game Over sudah dipanggil di Respawn() atau OnCollisionEnter2D
+        }
     }
 
     void FixedUpdate()
@@ -52,13 +81,8 @@ public class Fox : MonoBehaviour
 
     void SetAnimationState()
     {
-        // WALKING = ada input horizontal + sedang tidak lompat/jatuh
-        anim.SetBool("isWalking", dirX != 0 && rb.velocity.y == 0);
-
-        // Jumping
+        anim.SetBool("isWalking", dirX != 0 && rb.velocity.y == 0 && !isHurting);
         anim.SetBool("isJumping", rb.velocity.y > 0);
-
-        // Falling
         anim.SetBool("isFalling", rb.velocity.y < 0);
     }
 
@@ -73,21 +97,53 @@ public class Fox : MonoBehaviour
         transform.localScale = localScale;
     }
 
+    // Dipanggil saat Fox terkena Frog dari samping/bawah
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.CompareTag("Enemy"))
+        {
+            if (isHurting || healthPoints <= 0) return;
+
+            // Logika Hurt dan pengurangan HP
+            healthPoints -= 1;
+
+            if (healthPoints > 0)
+            {
+                anim.SetTrigger("isHurting");
+                StartCoroutine(Hurt());
+                if (gameManager != null)
+                {
+                    gameManager.UpdateHealthUI(healthPoints);
+                }
+            }
+            else // Mati karena tabrakan
+            {
+                anim.SetTrigger("isDeath");
+                StopDeathProcedures();
+            }
+        }
+    }
+
+    // Dipanggil saat Fox menyentuh Trigger (Cherry, Checkpoint, atau Head Stomping Frog)
     void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject.name.Equals("Frog"))
-            healthPoints-= 1;
-
-        if (col.gameObject.name.Equals("Frog") && healthPoints > 0)
+        // --- LOGIKA CHECKPOINT ---
+        if (col.gameObject.CompareTag("Checkpoint"))
         {
-            anim.SetTrigger("isHurting");
-            StartCoroutine("Hurt");
+            // Pastikan posisi respawn diperbarui hanya jika posisi checkpoint berbeda
+            if (respawnPosition != col.transform.position) 
+            {
+                respawnPosition = col.transform.position; 
+                Debug.Log("CHECKPOINT SAVED: Posisi respawn baru: " + respawnPosition); // <--- CEK CONSOLE INI!
+            }
+            // Opsional: Lakukan animasi Checkpoint di sini
+            return; 
         }
-        else
+        
+        // Cek tabrakan dengan item koleksi (Collectable)
+        if (col.gameObject.CompareTag("Collectable"))
         {
-            dirX = 0;
-            isHurting = true;
-            anim.SetTrigger("isHurting");
+            return;
         }
     }
 
@@ -96,6 +152,7 @@ public class Fox : MonoBehaviour
         isHurting = true;
         rb.velocity = Vector2.zero;
 
+        // Beri dorongan kebal
         if (facingRight)
             rb.AddForce(new Vector2(-200f, 200f));
         else
@@ -103,5 +160,51 @@ public class Fox : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         isHurting = false;
+    }
+
+  void StopDeathProcedures()
+    {
+        dirX = 0;
+        isHurting = true;
+        StopAllCoroutines();
+        GetComponent<Collider2D>().enabled = false;
+        
+        if (gameManager != null)
+        {
+            anim.SetTrigger("isDeath"); // Panggil animasi di sini
+            gameManager.GameOver();
+        }
+    }
+
+    // --- FUNGSI RESPAWN UTAMA (Dipanggil saat jatuh ke void) ---
+    void Respawn()
+    {
+        // Cegah double respawn saat sedang terluka atau sudah mati
+        if (isHurting || healthPoints <= 0) return;
+
+        // Kurangi nyawa
+        healthPoints -= 1;
+        
+        // Pindahkan Fox ke posisi respawn (Checkpoint/Awal)
+        rb.velocity = Vector2.zero; 
+        transform.position = respawnPosition; 
+        
+        // Update UI Life
+        if (gameManager != null)
+        {
+            gameManager.UpdateHealthUI(healthPoints);
+        }
+
+        if (healthPoints > 0)
+        {
+            // Pindah ke state Hurt (masa kebal)
+            anim.SetTrigger("isHurting");
+            StartCoroutine(Hurt()); 
+        }
+        else
+        {
+            // Game Over karena kehabisan nyawa
+            StopDeathProcedures();
+        }
     }
 }

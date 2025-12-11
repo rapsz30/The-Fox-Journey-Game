@@ -1,38 +1,57 @@
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
-
 {
     public Transform target;
-    public float smoothSpeed = 0.125f;
-    public Vector3 offset;
+    // HANYA ADA SATU DEKLARASI INI:
+    public Vector3 offset; 
+    
+    // Variabel BARU yang saya minta untuk ditambahkan (untuk tembok):
+    public Collider2D leftBoundary; 
 
     private float minX;
+    private float startY; 
 
     void Start()
     {
-        // Simpan posisi awal kamera
+        // Simpan posisi X awal kamera
         minX = transform.position.x;
+        
+        // SIMPAN POSISI Y AWAL
+        startY = transform.position.y; 
     }
 
     void LateUpdate()
     {
-        Vector3 currentPos = transform.position;
-
-        // Target X dari player
+        // --- LOGIKA HORIZONTAL (X): Maju Saja ---
         float targetX = target.position.x + offset.x;
-
-        // Batasi supaya kamera tidak pernah mundur
         float lockedX = Mathf.Max(targetX, minX);
-
-        // Update minX agar kamera hanya bisa maju
         minX = lockedX;
+        
+        // --- LOGIKA VERTIKAL (Y): Kunci Y ---
+        float fixedY = startY; 
 
-        // Buat posisi baru
-        Vector3 desiredPosition = new Vector3(lockedX, currentPos.y, currentPos.z);
-
-        Vector3 smoothedPosition = Vector3.Lerp(currentPos, desiredPosition, smoothSpeed);
-
-        transform.position = smoothedPosition;
+        // Terapkan posisi baru SECARA LANGSUNG
+        Vector3 desiredPosition = new Vector3(lockedX, fixedY, transform.position.z);
+        
+        transform.position = desiredPosition;
+        
+        // --- Pindahkan Tembok Tak Terlihat ---
+        if (leftBoundary != null)
+        {
+            // Menghitung setengah lebar tampilan kamera
+            float halfWidth = Camera.main.orthographicSize * Camera.main.aspect;
+            
+            // Posisi X tembok = Posisi Tengah Kamera (minX/lockedX) - Setengah Lebar - Setengah Lebar Tembok
+            // Diasumsikan Tembok memiliki lebar 1 unit untuk perhitungan ini
+            float wallX = minX - halfWidth; 
+            
+            // Atur posisi tembok
+            leftBoundary.transform.position = new Vector3(
+                wallX, 
+                leftBoundary.transform.position.y, 
+                leftBoundary.transform.position.z
+            );
+        }
     }
 }
