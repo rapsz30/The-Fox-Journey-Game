@@ -24,7 +24,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 16281
+  controlID: 19258
   draggingID: 0
 --- !u!114 &2
 MonoBehaviour:
@@ -192,7 +192,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 5e8fffff8a91fffff491ffff3e92ffffca9dfffffc9fffffb6b3ffff2eb4ffffbeb4ffffd2b6ffffacedffff22eeffff60eeffffa2eefffffceeffffcef9fffffefaffff548d0000668d0000a896000056a0000082b60000
+      m_ExpandedIDs: 646effff887fffff1883ffff5e8fffff8a91fffff491ffff3e92ffffca9dfffffc9fffffb6b3ffff2eb4ffffbeb4ffffd2b6ffffacedffff22eeffff60eeffffa2eefffffceeffffcef9fffffefaffff548d0000668d0000a896000056a0000082b60000bebb0000dabb0000debb0000e2bb0000f4bb00001cbc000026bc00002abc000038bc00003cbc000040bc000058bc00008abc00008ebc0000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -553,7 +553,7 @@ MonoBehaviour:
       containerId: overlay-container--right
       floating: 0
       collapsed: 0
-      displayed: 0
+      displayed: 1
       snapOffset: {x: 48, y: 48}
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
@@ -612,9 +612,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 1166.8287, y: 366.2491, z: -10.210282}
+    m_Target: {x: -1.6105642, y: 0.45996088, z: 0.0018591029}
     speed: 2
-    m_Value: {x: 1166.8287, y: 366.2491, z: -10.210282}
+    m_Value: {x: -1.6105642, y: 0.45996088, z: 0.0018591029}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -664,9 +664,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 631.23413
+    m_Target: 8.81132
     speed: 2
-    m_Value: 631.23413
+    m_Value: 8.81132
   m_Ortho:
     m_Target: 1
     speed: 2
