@@ -12,12 +12,29 @@ public class AudioManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
+            return;
         }
+
+        if (!bgmSource.isPlaying)
+        {
+            bgmSource.loop = true;
+            bgmSource.Play();
+        }
+    }
+
+    // ⭐ FUNGSI GANTI BGM
+    public void ChangeBGM(AudioClip newClip)
+    {
+        if (bgmSource.clip == newClip) return;
+
+        bgmSource.Stop();
+        bgmSource.clip = newClip;
+        bgmSource.Play();
     }
 
     public void ToggleSound()
