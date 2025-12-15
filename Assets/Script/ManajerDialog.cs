@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-
+//loww
 public class ManajerDialog : MonoBehaviour
 {
     [Header("Database")]

@@ -1,5 +1,5 @@
 using UnityEngine;
-
+//loww
 [System.Serializable]
 public class DataPertanyaan
 {

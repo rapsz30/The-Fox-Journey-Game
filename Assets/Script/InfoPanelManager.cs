@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+//loww
 public class InfoPanelManager : MonoBehaviour
 {
     [Header("UI Objects")]

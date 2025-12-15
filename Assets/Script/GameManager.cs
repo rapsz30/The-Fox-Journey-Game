@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro; // Wajib untuk TextMesh Pro
 using UnityEngine.SceneManagement; // Wajib untuk fungsi Restart dan mengakses Scene
-
+//loww
 public class GameManager : MonoBehaviour
 {
     private MusicButtonController musicButtonController;
