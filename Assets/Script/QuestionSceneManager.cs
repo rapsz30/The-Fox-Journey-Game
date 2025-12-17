@@ -36,6 +36,12 @@ public class QuestionSceneManager : MonoBehaviour
     [Header("Questions")]
     public QuestionData[] questions;
 
+    [Header("Typewriter Settings")]
+    public float typingSpeed = 0.035f;
+    public float commaDelayMultiplier = 3f;
+    public float dotDelayMultiplier = 6f;
+    public float specialDelayMultiplier = 5f;
+
     int currentIndex = 0;
     int score = 0;
     bool isTyping = false;
@@ -216,6 +222,8 @@ public class QuestionSceneManager : MonoBehaviour
         buttonFalse.gameObject.SetActive(false);
     }
 
+    // ================= TYPEWRITER (IMPROVED) =================
+
     IEnumerator TypeWriter(TextMeshProUGUI textUI, string text)
     {
         isTyping = true;
@@ -224,7 +232,17 @@ public class QuestionSceneManager : MonoBehaviour
         foreach (char c in text)
         {
             textUI.text += c;
-            yield return new WaitForSeconds(0.03f);
+
+            float delay = typingSpeed;
+
+            if (c == ',')
+                delay *= commaDelayMultiplier;
+            else if (c == '.')
+                delay *= dotDelayMultiplier;
+            else if (c == '!' || c == '?')
+                delay *= specialDelayMultiplier;
+
+            yield return new WaitForSeconds(delay);
         }
 
         isTyping = false;

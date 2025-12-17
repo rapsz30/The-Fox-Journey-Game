@@ -1,15 +1,16 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement; // Dibutuhkan untuk pindah scene
 
-public class ScenePortal : MonoBehaviour
+public class TeleportScene : MonoBehaviour
 {
-    public string targetScene;
+    [SerializeField] private string namaSceneTujuan;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.CompareTag("Player"))
+        // Mengecek apakah yang menginjak adalah Player
+        if (collision.CompareTag("Player"))
         {
-            SceneManager.LoadScene(targetScene);
+            SceneManager.LoadScene(namaSceneTujuan);
         }
     }
 }
