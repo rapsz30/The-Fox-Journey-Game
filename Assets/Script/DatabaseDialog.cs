@@ -1,5 +1,4 @@
 using UnityEngine;
-//loww
 [System.Serializable]
 public class DataPertanyaan
 {
@@ -25,7 +24,6 @@ public class DatabaseDialog : MonoBehaviour
 
     private void Awake()
     {
-        // Jika belum diisi dari Inspector, otomatis isi 10 pertanyaan
         if (daftarPertanyaan == null || daftarPertanyaan.Length == 0)
         {
             daftarPertanyaan = new DataPertanyaan[10];

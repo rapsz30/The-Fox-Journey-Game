@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Dibutuhkan untuk pindah scene
+using UnityEngine.SceneManagement; 
 
 public class TeleportScene : MonoBehaviour
 {
@@ -7,7 +7,6 @@ public class TeleportScene : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Mengecek apakah yang menginjak adalah Player
         if (collision.CompareTag("Player"))
         {
             SceneManager.LoadScene(namaSceneTujuan);

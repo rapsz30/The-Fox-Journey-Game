@@ -27,7 +27,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // ⭐ FUNGSI GANTI BGM
     public void ChangeBGM(AudioClip newClip)
     {
         if (bgmSource.clip == newClip) return;
