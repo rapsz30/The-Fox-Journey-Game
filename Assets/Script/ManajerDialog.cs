@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-//loww
+
 public class ManajerDialog : MonoBehaviour
 {
     [Header("Database")]
@@ -78,7 +78,6 @@ public class ManajerDialog : MonoBehaviour
 
         teksSkor.text = "Skor: " + skor;
 
-        // lanjut ke soal berikutnya setelah 2 detik
         Invoke(nameof(SoalBerikutnya), 2f);
     }
 
