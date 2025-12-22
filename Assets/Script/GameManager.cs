@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     private MusicButtonController musicButtonController;
     public List<GameObject> livesUI; 
-    
+    public static int finalCherryScore = 0;
     public TextMeshProUGUI scoreText; 
     public GameObject pausePanel; 
     public GameObject pauseButtonIcon;
@@ -33,9 +33,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddScore(int points)
+public void AddScore(int points)
     {
         score += points;
+        finalCherryScore = score; // Simpan ke variabel static
         UpdateScoreUI();
     }
 

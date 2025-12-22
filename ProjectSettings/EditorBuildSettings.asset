@@ -32,4 +32,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/QuestionScene.unity
     guid: 53ccd0aba0ab8b0459a74af2f478c8e6
+  - enabled: 1
+    path: Assets/Scenes/FinalScore.unity
+    guid: 424e273b36998084d9228ea597afc62b
+  - enabled: 1
+    path: Assets/Scenes/GameOverScreen.unity
+    guid: b73dcf78f3a316d428d870b601c134c8
   m_configObjects: {}

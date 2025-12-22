@@ -34,12 +34,16 @@ public class Fox : MonoBehaviour
         }
     }
 
-    void Update()
+   void Update()
     {
         dirX = Input.GetAxisRaw("Horizontal") * moveSpeed;
 
-        if (Input.GetButtonDown("Jump") && rb.velocity.y == 0 && !isHurting)
+        // MODIFIKASI: Menambahkan input W dan Arrow Up untuk melompat
+        if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) 
+            && rb.velocity.y == 0 && !isHurting)
+        {
             rb.AddForce(Vector2.up * 600f);
+        }
 
         if (Input.GetKey(KeyCode.LeftShift))
             moveSpeed = 7f;
@@ -50,11 +54,7 @@ public class Fox : MonoBehaviour
 
         if (transform.position.y < deathYCoordinate)
         {
-            if (healthPoints > 0)
-            {
-                Debug.Log("FALL DETECTED: Memanggil Respawn(). HP sisa: " + (healthPoints - 1));
-                Respawn(); 
-            }
+            Respawn();
         }
     }
 

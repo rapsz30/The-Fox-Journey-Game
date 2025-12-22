@@ -7,15 +7,17 @@ using UnityEngine.SceneManagement;
 
 public class QuestionSceneManager : MonoBehaviour
 {
-    public enum State { Intro, Question, AnswerFeedback, Outro, GameOver }
+    public enum State { Intro, Question, AnswerFeedback, Outro }
     private State currentState;
+
+    // Simpan skor agar bisa dibaca di scene FinalScore atau GameOverScreen
+    public static int finalGemScore = 0;
 
     [Header("UI Panels")]
     public GameObject storyPanel;    
     public GameObject questionPanel; 
     public GameObject answerPanel;   
-    public GameObject pausePanel;    // Pastikan di Hierarchy ini berada paling bawah (depan)
-    public CanvasGroup gameOverPanel;
+    public GameObject pausePanel;    
 
     [Header("UI Text Elements")]
     public TextMeshProUGUI storyText;    
@@ -26,10 +28,9 @@ public class QuestionSceneManager : MonoBehaviour
     [Header("Buttons")]
     public Button trueButton;
     public Button falseButton;
-    public Button pauseButton;       // Tombol pause kecil di pojok
-    public Button resumeButton;      // Tombol resume di dalam PausePanel
-    public Button restartButton;     // Tombol restart di dalam PausePanel (Repeat Level)
-    public Button gameOverRestartButton; // Drag tombol Restart di GameOverPanel ke sini (Ke HomePage)
+    public Button pauseButton;       
+    public Button resumeButton;      
+    public Button restartButton;     
     public Button mainMenuButton;    
 
     [Header("Data Settings")]
@@ -50,6 +51,7 @@ public class QuestionSceneManager : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1f;
+        finalGemScore = 0; // Reset skor static saat mulai
         PrepareQuestions();
         SetupButtonListeners();
 
@@ -60,12 +62,6 @@ public class QuestionSceneManager : MonoBehaviour
         answerPanel.SetActive(false);
         UpdateScoreUI();
         
-        if (gameOverPanel != null) { 
-            gameOverPanel.alpha = 0; 
-            gameOverPanel.interactable = false; 
-            gameOverPanel.blocksRaycasts = false; 
-        }
-
         currentIdx = 0;
         score = 0;
         ShowIntro();
@@ -78,14 +74,10 @@ public class QuestionSceneManager : MonoBehaviour
         trueButton.onClick.AddListener(() => HandleAnswer(true));
         falseButton.onClick.AddListener(() => HandleAnswer(false));
 
-        // Listener Tombol Pause & Menu
         if (pauseButton != null) pauseButton.onClick.AddListener(PauseGame);
         if (resumeButton != null) resumeButton.onClick.AddListener(ResumeGame);
-        if (restartButton != null) restartButton.onClick.AddListener(RestartGame); // Restart Level
+        if (restartButton != null) restartButton.onClick.AddListener(RestartGame);
         if (mainMenuButton != null) mainMenuButton.onClick.AddListener(GoToMainMenu);
-
-        // Khusus tombol restart di Game Over Panel (ke HomePage)
-        if (gameOverRestartButton != null) gameOverRestartButton.onClick.AddListener(GoToMainMenu);
     }
 
     void PrepareQuestions()
@@ -124,7 +116,6 @@ public class QuestionSceneManager : MonoBehaviour
         }
     }
 
-    // --- LOGIKA ALUR ---
     void ShowIntro()
     {
         currentState = State.Intro;
@@ -150,6 +141,7 @@ public class QuestionSceneManager : MonoBehaviour
         bool isCorrect = (choice == selectedQuestions[currentIdx].correctAnswer);
         if (isCorrect) {
             score++;
+            finalGemScore = score; // Update skor static
             UpdateScoreUI();
         }
         ShowAnswerFeedback(isCorrect);
@@ -161,7 +153,7 @@ public class QuestionSceneManager : MonoBehaviour
         questionPanel.SetActive(false);
         answerPanel.SetActive(true);
         string header = correct ? "<color=#00FF00>BENAR!</color>" : "<color=#FF0000>SALAH!</color>";
-        StartTyping(feedbackText, header + "\n" + selectedQuestions[currentIdx].answerExplanation);
+        StartTyping(feedbackText, header + "\n\n" + selectedQuestions[currentIdx].answerExplanation);
     }
 
     void NextStep()
@@ -182,8 +174,15 @@ public class QuestionSceneManager : MonoBehaviour
 
     void FinishLevel()
     {
-        if (score >= 3) SceneManager.LoadScene("FinalScore");
-        else ShowGameOverPanel();
+        if (score >= 3) 
+        {
+            SceneManager.LoadScene("FinalScore");
+        }
+        else 
+        {
+            // Jika benar kurang dari 3, langsung pindah ke scene GameOverScreen
+            SceneManager.LoadScene("GameOverScreen");
+        }
     }
 
     void UpdateScoreUI()
@@ -232,7 +231,7 @@ public class QuestionSceneManager : MonoBehaviour
         else if (currentState == State.AnswerFeedback) feedbackText.text = currentFullText;
     }
 
-    // --- SYSTEM PAUSE & MENU ---
+    // --- PAUSE SYSTEM ---
     public void PauseGame() 
     { 
         isPaused = true; 
@@ -259,15 +258,5 @@ public class QuestionSceneManager : MonoBehaviour
     { 
         Time.timeScale = 1f; 
         SceneManager.LoadScene("HomePage"); 
-    }
-
-    void ShowGameOverPanel() 
-    { 
-        currentState = State.GameOver;
-        if(gameOverPanel != null) {
-            gameOverPanel.alpha = 1; 
-            gameOverPanel.interactable = true; 
-            gameOverPanel.blocksRaycasts = true; 
-        }
     }
 }
