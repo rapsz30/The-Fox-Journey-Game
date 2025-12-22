@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -6,245 +7,267 @@ using UnityEngine.SceneManagement;
 
 public class QuestionSceneManager : MonoBehaviour
 {
-    [Header("Panels")]
-    public CanvasGroup questionPanel;
-    public CanvasGroup pausePanel;
+    public enum State { Intro, Question, AnswerFeedback, Outro, GameOver }
+    private State currentState;
+
+    [Header("UI Panels")]
+    public GameObject storyPanel;    
+    public GameObject questionPanel; 
+    public GameObject answerPanel;   
+    public GameObject pausePanel;    // Pastikan di Hierarchy ini berada paling bawah (depan)
     public CanvasGroup gameOverPanel;
 
-    [Header("Texts (TMP)")]
-    public TextMeshProUGUI storyText;
-    public TextMeshProUGUI questionText;
-    public TextMeshProUGUI answerText;
+    [Header("UI Text Elements")]
+    public TextMeshProUGUI storyText;    
+    public TextMeshProUGUI questionText; 
+    public TextMeshProUGUI feedbackText; 
     public TextMeshProUGUI scoreText;
 
     [Header("Buttons")]
-    public Button buttonTrue;
-    public Button buttonFalse;
-    public GameObject buttonPause;
-    public Button musicButton;
+    public Button trueButton;
+    public Button falseButton;
+    public Button pauseButton;       // Tombol pause kecil di pojok
+    public Button resumeButton;      // Tombol resume di dalam PausePanel
+    public Button restartButton;     // Tombol restart di dalam PausePanel (Repeat Level)
+    public Button gameOverRestartButton; // Drag tombol Restart di GameOverPanel ke sini (Ke HomePage)
+    public Button mainMenuButton;    
 
-    [Header("Audio")]
-    public AudioSource bgmSource;
+    [Header("Data Settings")]
+    public LevelStoryData levelStory;      
+    public List<QuestionData> questionsDB; 
 
-    [Header("Story")]
-    [TextArea] public string openingStory;
+    [Header("Typing Settings")]
+    public float typeSpeed = 0.04f;
 
-    [Header("Ending Story")]
-    [TextArea] public string endingStoryWin;
-    [TextArea] public string endingStoryLose;
-
-    [Header("Questions")]
-    public QuestionData[] questions;
-
-    [Header("Typewriter Settings")]
-    public float typingSpeed = 0.035f;
-    public float commaDelayMultiplier = 3f;
-    public float dotDelayMultiplier = 6f;
-    public float specialDelayMultiplier = 5f;
-
-    int currentIndex = 0;
-    int score = 0;
-    bool isTyping = false;
-    bool musicOn = true;
+    private List<QuestionData> selectedQuestions = new List<QuestionData>();
+    private int currentIdx = 0;
+    private int score = 0;
+    private bool isPaused = false;
+    private bool isTyping = false;
+    private string currentFullText = "";
+    private Coroutine typingCoroutine;
 
     void Start()
     {
-        ShowOnly(questionPanel);
-        HideAllTexts();
-        StartCoroutine(PlayOpeningStory());
-    }
+        Time.timeScale = 1f;
+        PrepareQuestions();
+        SetupButtonListeners();
 
-    // ================= PANEL CONTROL =================
-
-    void ShowOnly(CanvasGroup panel)
-    {
-        SetPanel(questionPanel, false);
-        SetPanel(pausePanel, false);
-        SetPanel(gameOverPanel, false);
-
-        SetPanel(panel, true);
-    }
-
-    void SetPanel(CanvasGroup panel, bool show)
-    {
-        if (panel == null) return;
-        panel.alpha = show ? 1 : 0;
-        panel.interactable = show;
-        panel.blocksRaycasts = show;
-    }
-
-    // ================= STORY =================
-
-    IEnumerator PlayOpeningStory()
-    {
-        storyText.gameObject.SetActive(true);
-        yield return StartCoroutine(TypeWriter(storyText, openingStory));
-        yield return new WaitForSeconds(0.5f);
-
-        storyText.gameObject.SetActive(false);
-        StartCoroutine(ShowQuestion());
-    }
-
-    IEnumerator PlayEndingStory()
-    {
-        HideQuestionUI();
-        storyText.gameObject.SetActive(true);
-
-        if (score > 6)
-        {
-            yield return StartCoroutine(TypeWriter(storyText, endingStoryWin));
-            yield return new WaitForSeconds(0.5f);
-            SceneManager.LoadScene("FinalScore");
-        }
-        else
-        {
-            yield return StartCoroutine(TypeWriter(storyText, endingStoryLose));
-            yield return new WaitForSeconds(0.5f);
-            storyText.gameObject.SetActive(false);
-            ShowOnly(gameOverPanel);
-        }
-    }
-
-    // ================= QUESTION FLOW =================
-
-    IEnumerator ShowQuestion()
-    {
-        if (currentIndex >= questions.Length)
-        {
-            StartCoroutine(PlayEndingStory());
-            yield break;
+        // Reset UI State
+        pausePanel.SetActive(false);
+        if(pauseButton != null) pauseButton.gameObject.SetActive(true);
+        questionPanel.SetActive(false);
+        answerPanel.SetActive(false);
+        UpdateScoreUI();
+        
+        if (gameOverPanel != null) { 
+            gameOverPanel.alpha = 0; 
+            gameOverPanel.interactable = false; 
+            gameOverPanel.blocksRaycasts = false; 
         }
 
-        questionText.gameObject.SetActive(true);
-        answerText.gameObject.SetActive(false);
-        buttonTrue.gameObject.SetActive(false);
-        buttonFalse.gameObject.SetActive(false);
-
-        yield return StartCoroutine(TypeWriter(
-            questionText,
-            questions[currentIndex].question
-        ));
-
-        buttonTrue.gameObject.SetActive(true);
-        buttonFalse.gameObject.SetActive(true);
-
-        buttonTrue.onClick.RemoveAllListeners();
-        buttonFalse.onClick.RemoveAllListeners();
-
-        buttonTrue.onClick.AddListener(() => OnAnswer(true));
-        buttonFalse.onClick.AddListener(() => OnAnswer(false));
+        currentIdx = 0;
+        score = 0;
+        ShowIntro();
     }
 
-    void OnAnswer(bool playerAnswer)
+    void SetupButtonListeners()
     {
-        if (isTyping) return;
+        trueButton.onClick.RemoveAllListeners();
+        falseButton.onClick.RemoveAllListeners();
+        trueButton.onClick.AddListener(() => HandleAnswer(true));
+        falseButton.onClick.AddListener(() => HandleAnswer(false));
 
-        if (playerAnswer == questions[currentIndex].correctAnswer)
+        // Listener Tombol Pause & Menu
+        if (pauseButton != null) pauseButton.onClick.AddListener(PauseGame);
+        if (resumeButton != null) resumeButton.onClick.AddListener(ResumeGame);
+        if (restartButton != null) restartButton.onClick.AddListener(RestartGame); // Restart Level
+        if (mainMenuButton != null) mainMenuButton.onClick.AddListener(GoToMainMenu);
+
+        // Khusus tombol restart di Game Over Panel (ke HomePage)
+        if (gameOverRestartButton != null) gameOverRestartButton.onClick.AddListener(GoToMainMenu);
+    }
+
+    void PrepareQuestions()
+    {
+        List<QuestionData> tmp = new List<QuestionData>(questionsDB);
+        for (int i = 0; i < tmp.Count; i++) {
+            int r = Random.Range(i, tmp.Count);
+            QuestionData t = tmp[i]; tmp[i] = tmp[r]; tmp[r] = t;
+        }
+        selectedQuestions.Clear();
+        int limit = Mathf.Min(5, tmp.Count);
+        for (int i = 0; i < limit; i++) selectedQuestions.Add(tmp[i]);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (isPaused) ResumeGame(); else PauseGame();
+        }
+
+        if (isPaused) return;
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (isTyping)
+            {
+                StopTypingAndShowFull();
+            }
+            else
+            {
+                if (currentState == State.Intro) ShowQuestion();
+                else if (currentState == State.AnswerFeedback) NextStep();
+                else if (currentState == State.Outro) FinishLevel();
+            }
+        }
+    }
+
+    // --- LOGIKA ALUR ---
+    void ShowIntro()
+    {
+        currentState = State.Intro;
+        storyPanel.SetActive(true);
+        questionPanel.SetActive(false);
+        answerPanel.SetActive(false);
+        StartTyping(storyText, levelStory.introStory);
+    }
+
+    void ShowQuestion()
+    {
+        currentState = State.Question;
+        storyPanel.SetActive(false);
+        questionPanel.SetActive(true);
+        answerPanel.SetActive(false);
+        StartTyping(questionText, selectedQuestions[currentIdx].question);
+    }
+
+    void HandleAnswer(bool choice)
+    {
+        if (currentState != State.Question || isTyping || isPaused) return;
+        
+        bool isCorrect = (choice == selectedQuestions[currentIdx].correctAnswer);
+        if (isCorrect) {
             score++;
-            scoreText.text = "Score:      x " + score;
+            UpdateScoreUI();
         }
-
-        StartCoroutine(ShowAnswer());
+        ShowAnswerFeedback(isCorrect);
     }
 
-    IEnumerator ShowAnswer()
+    void ShowAnswerFeedback(bool correct)
+    {
+        currentState = State.AnswerFeedback;
+        questionPanel.SetActive(false);
+        answerPanel.SetActive(true);
+        string header = correct ? "<color=#00FF00>BENAR!</color>" : "<color=#FF0000>SALAH!</color>";
+        StartTyping(feedbackText, header + "\n" + selectedQuestions[currentIdx].answerExplanation);
+    }
+
+    void NextStep()
+    {
+        currentIdx++;
+        if (currentIdx < selectedQuestions.Count) ShowQuestion(); 
+        else ShowOutro();
+    }
+
+    void ShowOutro()
+    {
+        currentState = State.Outro;
+        answerPanel.SetActive(false);
+        storyPanel.SetActive(true);
+        string finalStory = (score >= 3) ? levelStory.winStory : levelStory.loseStory;
+        StartTyping(storyText, finalStory);
+    }
+
+    void FinishLevel()
+    {
+        if (score >= 3) SceneManager.LoadScene("FinalScore");
+        else ShowGameOverPanel();
+    }
+
+    void UpdateScoreUI()
+    {
+        if (scoreText != null) scoreText.text = score.ToString();
+    }
+
+    // --- TYPEWRITER CORE ---
+    void StartTyping(TextMeshProUGUI element, string txt)
+    {
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+        typingCoroutine = StartCoroutine(TypeText(element, txt));
+    }
+
+    IEnumerator TypeText(TextMeshProUGUI textElement, string fullText)
     {
         isTyping = true;
-
-        questionText.gameObject.SetActive(false);
-        buttonTrue.gameObject.SetActive(false);
-        buttonFalse.gameObject.SetActive(false);
-
-        answerText.gameObject.SetActive(true);
-        yield return StartCoroutine(TypeWriter(
-            answerText,
-            questions[currentIndex].answerExplanation
-        ));
-
-        yield return new WaitForSeconds(0.8f);
-        answerText.gameObject.SetActive(false);
-
-        currentIndex++;
-        isTyping = false;
-
-        StartCoroutine(ShowQuestion());
-    }
-
-    // ================= MUSIC =================
-
-    public void ToggleMusic()
-    {
-        musicOn = !musicOn;
-        bgmSource.mute = !musicOn;
-    }
-
-    // ================= PAUSE =================
-
-    public void PauseGame()
-    {
-        buttonPause.SetActive(false);
-        ShowOnly(pausePanel);
-        Time.timeScale = 0f;
-    }
-
-    public void ResumeGame()
-    {
-        Time.timeScale = 1f;
-        buttonPause.SetActive(true);
-        ShowOnly(questionPanel);
-    }
-
-    // ================= GAME OVER =================
-
-    public void PlayAgain()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("HomePage");
-    }
-
-    // ================= UTIL =================
-
-    void HideAllTexts()
-    {
-        storyText.gameObject.SetActive(false);
-        questionText.gameObject.SetActive(false);
-        answerText.gameObject.SetActive(false);
-        buttonTrue.gameObject.SetActive(false);
-        buttonFalse.gameObject.SetActive(false);
-    }
-
-    void HideQuestionUI()
-    {
-        questionText.gameObject.SetActive(false);
-        answerText.gameObject.SetActive(false);
-        buttonTrue.gameObject.SetActive(false);
-        buttonFalse.gameObject.SetActive(false);
-    }
-
-    // ================= TYPEWRITER (IMPROVED) =================
-
-    IEnumerator TypeWriter(TextMeshProUGUI textUI, string text)
-    {
-        isTyping = true;
-        textUI.text = "";
-
-        foreach (char c in text)
+        currentFullText = fullText;
+        textElement.text = "";
+        int i = 0;
+        while (i < fullText.Length)
         {
-            textUI.text += c;
-
-            float delay = typingSpeed;
-
-            if (c == ',')
-                delay *= commaDelayMultiplier;
-            else if (c == '.')
-                delay *= dotDelayMultiplier;
-            else if (c == '!' || c == '?')
-                delay *= specialDelayMultiplier;
-
-            yield return new WaitForSeconds(delay);
+            if (fullText[i] == '<')
+            {
+                int endTag = fullText.IndexOf('>', i);
+                if (endTag != -1)
+                {
+                    textElement.text += fullText.Substring(i, endTag - i + 1);
+                    i = endTag + 1;
+                    continue;
+                }
+            }
+            textElement.text += fullText[i];
+            i++;
+            yield return new WaitForSeconds(typeSpeed);
         }
-
         isTyping = false;
+    }
+
+    void StopTypingAndShowFull()
+    {
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+        isTyping = false;
+        if (currentState == State.Intro || currentState == State.Outro) storyText.text = currentFullText;
+        else if (currentState == State.Question) questionText.text = currentFullText;
+        else if (currentState == State.AnswerFeedback) feedbackText.text = currentFullText;
+    }
+
+    // --- SYSTEM PAUSE & MENU ---
+    public void PauseGame() 
+    { 
+        isPaused = true; 
+        pausePanel.SetActive(true); 
+        if(pauseButton != null) pauseButton.gameObject.SetActive(false);
+        Time.timeScale = 0f; 
+    }
+
+    public void ResumeGame() 
+    { 
+        isPaused = false; 
+        pausePanel.SetActive(false); 
+        if(pauseButton != null) pauseButton.gameObject.SetActive(true);
+        Time.timeScale = 1f; 
+    }
+
+    public void RestartGame() 
+    { 
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); 
+    }
+
+    public void GoToMainMenu() 
+    { 
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene("HomePage"); 
+    }
+
+    void ShowGameOverPanel() 
+    { 
+        currentState = State.GameOver;
+        if(gameOverPanel != null) {
+            gameOverPanel.alpha = 1; 
+            gameOverPanel.interactable = true; 
+            gameOverPanel.blocksRaycasts = true; 
+        }
     }
 }

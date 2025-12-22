@@ -414,8 +414,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Play
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: f629c6e43dba4bf38cb74d8860150664, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
+  m_sharedMaterial: {fileID: 5587646351887890011, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -711,7 +711,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 281}
+  m_AnchoredPosition: {x: 0, y: 262}
   m_SizeDelta: {x: 591.5063, y: 102.5345}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &487084429
@@ -736,8 +736,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Created By:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: f629c6e43dba4bf38cb74d8860150664, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
+  m_sharedMaterial: {fileID: 5587646351887890011, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -797,7 +797,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -46.88916, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -929,7 +929,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -5.3754, y: -57.5667}
+  m_AnchoredPosition: {x: 0.00002718, y: -69}
   m_SizeDelta: {x: 983.7568, y: 341.1223}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &516829529
@@ -961,8 +961,8 @@ MonoBehaviour:
     Mohamad
     Rafi Hendryansah'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: f629c6e43dba4bf38cb74d8860150664, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
+  m_sharedMaterial: {fileID: 5587646351887890011, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1866,8 +1866,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Exit
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: f629c6e43dba4bf38cb74d8860150664, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
+  m_sharedMaterial: {fileID: 5587646351887890011, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2166,12 +2166,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'The Fox Journey:
+  m_text: 'THE FOX JOURNEY:
 
-    Gems Hunter'
+    GEMS HUNTER'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: f629c6e43dba4bf38cb74d8860150664, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
+  m_sharedMaterial: {fileID: 5587646351887890011, guid: 49c7bfb99ff648d4d9068059432e2051, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
