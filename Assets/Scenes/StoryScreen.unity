@@ -404,21 +404,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storyText: {fileID: 588443748}
-  fullStory: 'In the heart of a mysterious forest, a clever fox has lost his precious
-    gems, stolen by the guardian bear of the woods.
-
-
-    To face the bear, the fox
-    must journey through the vast forest filled with surprises, collecting scattered
-    red cherries as secret keys along the way.
-
-
-    But the journey does not end
-    there. When they finally meet, the bear will challenge the fox with unexpected
-    questions.
-
-
-    Will the fox be able to answer them and reclaim his lost gems?'
+  fullStory: In the heart of a mysterious forest, a clever fox has lost his precious
+    gems, stolen by the guardian bear of the woods. To face the bear, the fox must
+    journey through the vast forest filled with surprises, collecting scattered red
+    cherries as secret keys along the way. But the journey does not end there. When
+    they finally meet, the bear will challenge the fox with unexpected questions.
+    Will the fox be able to answer them and reclaim his lost gems?
   typingSpeed: 0.05
   sentenceDelay: 0.5
   typingAudio: {fileID: 0}

@@ -32,6 +32,7 @@ public class QuestionSceneManager : MonoBehaviour
     public Button resumeButton;      
     public Button restartButton;     
     public Button mainMenuButton;    
+    public Button muteToggleButton; // Drag tombol Mute/Unmute ke sini di Inspector
 
     [Header("Data Settings")]
     public LevelStoryData levelStory;      
@@ -51,7 +52,7 @@ public class QuestionSceneManager : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1f;
-        finalGemScore = 0; // Reset skor static saat mulai
+        finalGemScore = 0; 
         PrepareQuestions();
         SetupButtonListeners();
 
@@ -78,6 +79,27 @@ public class QuestionSceneManager : MonoBehaviour
         if (resumeButton != null) resumeButton.onClick.AddListener(ResumeGame);
         if (restartButton != null) restartButton.onClick.AddListener(RestartGame);
         if (mainMenuButton != null) mainMenuButton.onClick.AddListener(GoToMainMenu);
+
+        // Listener untuk tombol Mute/Unmute
+        if (muteToggleButton != null) muteToggleButton.onClick.AddListener(ToggleMusic);
+    }
+
+    // FUNGSI BARU: Mengontrol Mute/Unmute dan sinkronisasi dengan MusicButtonController
+    public void ToggleMusic()
+    {
+        if (AudioManager.instance != null)
+        {
+            // Panggil fungsi ToggleSound dari AudioManager.cs
+            AudioManager.instance.ToggleSound();
+
+            // Cari MusicButtonController di scene dan minta dia ganti sprite (ikon)
+            MusicButtonController musicBtn = FindObjectOfType<MusicButtonController>();
+            if (musicBtn != null)
+            {
+                // IsMuted() mengembalikan true jika suara mati, maka isMusicOn adalah kebalikannya
+                musicBtn.UpdateSprite(!AudioManager.instance.IsMuted());
+            }
+        }
     }
 
     void PrepareQuestions()
@@ -141,7 +163,7 @@ public class QuestionSceneManager : MonoBehaviour
         bool isCorrect = (choice == selectedQuestions[currentIdx].correctAnswer);
         if (isCorrect) {
             score++;
-            finalGemScore = score; // Update skor static
+            finalGemScore = score; 
             UpdateScoreUI();
         }
         ShowAnswerFeedback(isCorrect);
@@ -152,8 +174,8 @@ public class QuestionSceneManager : MonoBehaviour
         currentState = State.AnswerFeedback;
         questionPanel.SetActive(false);
         answerPanel.SetActive(true);
-        string header = correct ? "<color=#00FF00>BENAR!</color>" : "<color=#FF0000>SALAH!</color>";
-        StartTyping(feedbackText, header + "\n\n" + selectedQuestions[currentIdx].answerExplanation);
+        string header = correct ? "<color=#00FF00>TRUE!</color>" : "<color=#FF0000>FALSE!</color>";
+        StartTyping(feedbackText, header + "\n" + selectedQuestions[currentIdx].answerExplanation);
     }
 
     void NextStep()
@@ -180,7 +202,6 @@ public class QuestionSceneManager : MonoBehaviour
         }
         else 
         {
-            // Jika benar kurang dari 3, langsung pindah ke scene GameOverScreen
             SceneManager.LoadScene("GameOverScreen");
         }
     }
@@ -190,7 +211,6 @@ public class QuestionSceneManager : MonoBehaviour
         if (scoreText != null) scoreText.text = score.ToString();
     }
 
-    // --- TYPEWRITER CORE ---
     void StartTyping(TextMeshProUGUI element, string txt)
     {
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
@@ -231,7 +251,6 @@ public class QuestionSceneManager : MonoBehaviour
         else if (currentState == State.AnswerFeedback) feedbackText.text = currentFullText;
     }
 
-    // --- PAUSE SYSTEM ---
     public void PauseGame() 
     { 
         isPaused = true; 

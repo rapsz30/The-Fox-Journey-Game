@@ -218,6 +218,7 @@ GameObject:
   - component: {fileID: 88624280}
   - component: {fileID: 88624279}
   - component: {fileID: 88624278}
+  - component: {fileID: 88624281}
   m_Layer: 5
   m_Name: MusicOnButton
   m_TagString: Untagged
@@ -339,6 +340,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 88624275}
   m_CullTransparentMesh: 1
+--- !u!114 &88624281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 88624275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7e50afa3dc7f754091219e1ba8e9c1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicOnSprite: {fileID: 21300000, guid: 20f0472fce53b9b4cbd83f883ea410f3, type: 3}
+  musicOffSprite: {fileID: 21300000, guid: c98ff698fc572754d95ebcc605190ee6, type: 3}
 --- !u!1 &91006190
 GameObject:
   m_ObjectHideFlags: 0
@@ -2037,30 +2052,30 @@ MonoBehaviour:
   resumeButton: {fileID: 1743694994}
   restartButton: {fileID: 1845754850}
   mainMenuButton: {fileID: 903333765}
+  muteToggleButton: {fileID: 88624278}
   levelStory:
-    introStory: 'AOWKWWOKWOWKOWKWOKWOKWOWKOWKWOKWOKWOWK
-
-      WOKWKOWKWOKWOKWOWKWOKWOWKOWKWOKWOKWOWK
-
-      WOKWKOWKWOKWOKWOWKWOKWOKWOWKWOKWOKWOKW'
-    winStory: YAHAHAHAAH
-    loseStory: EODJOWKNDENDSNOSM
+    introStory: "You\u2019ve come far, Fox. I\u2019ll return the gems\u2014but not
+      for free. Answer my questions. Get more than six right, or the gems stay with
+      me HAHAHAHAHA"
+    winStory: "Well\u2026 congrats. You win. Go on, take them. Rules are rules."
+    loseStory: "AOWWKWKWK, that\u2019s all you\u2019ve got? Go learn some more, then
+      come back when you\u2019re smarter."
   questionsDB:
-  - question: Beruang madu dinamakan karena suka makan madu
+  - question: The red cherries scattered in the forest act as hidden keys
     correctAnswer: 1
-    answerExplanation: hahaha betul sekali
-  - question: Ayam kecap adalah ayam yang dikecapin
-    correctAnswer: 1
-    answerExplanation: eyyow
-  - question: ayam goreng adalah ayam yang digoreng
-    correctAnswer: 1
-    answerExplanation: jirr bener
-  - question: ayam bakar adalah ayam yang dibakar
-    correctAnswer: 1
-    answerExplanation: woaaa bener
-  - question: indomi goreng adalah mi yang digoreng
+    answerExplanation: The forest rewards those who observe carefully.
+  - question: Rushing through the forest always leads to success
     correctAnswer: 0
-    answerExplanation: di rebus doang jir
+    answerExplanation: Speed means nothing without wisdom in this forest
+  - question: Every challenge in the forest has a lesson behind it
+    correctAnswer: 1
+    answerExplanation: Well said. The forest tests both mind and heart
+  - question: Strength alone is enough to reclaim what was lost
+    correctAnswer: 0
+    answerExplanation: Power fades quickly without understanding
+  - question: Only those who learn from failure can truly move forward
+    correctAnswer: 1
+    answerExplanation: You understand the way of the forest
   typeSpeed: 0.05
 --- !u!4 &648612793
 Transform:

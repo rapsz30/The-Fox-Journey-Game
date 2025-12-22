@@ -34,7 +34,7 @@ public class Fox : MonoBehaviour
         }
     }
 
-   void Update()
+void Update()
     {
         dirX = Input.GetAxisRaw("Horizontal") * moveSpeed;
 
