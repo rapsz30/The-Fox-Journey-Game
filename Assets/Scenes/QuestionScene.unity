@@ -2061,21 +2061,22 @@ MonoBehaviour:
     loseStory: "AOWWKWKWK, that\u2019s all you\u2019ve got? Go learn some more, then
       come back when you\u2019re smarter."
   questionsDB:
-  - question: The red cherries scattered in the forest act as hidden keys
+  - question: Plants need sunlight to grow properly
     correctAnswer: 1
-    answerExplanation: The forest rewards those who observe carefully.
-  - question: Rushing through the forest always leads to success
+    answerExplanation: "Without sunlight, plants get weak and sad\u2026 just like
+      me without you, WKWKWK."
+  - question: Drinking enough water helps keep our bodies healthy
+    correctAnswer: 1
+    answerExplanation: No water, no energy. Even bears know that
+  - question: Littering helps keep the forest clean
     correctAnswer: 0
-    answerExplanation: Speed means nothing without wisdom in this forest
-  - question: Every challenge in the forest has a lesson behind it
+    answerExplanation: Trash belongs in the bin, not in my forest
+  - question: Reading books can help us learn new things
     correctAnswer: 1
-    answerExplanation: Well said. The forest tests both mind and heart
-  - question: Strength alone is enough to reclaim what was lost
-    correctAnswer: 0
-    answerExplanation: Power fades quickly without understanding
-  - question: Only those who learn from failure can truly move forward
+    answerExplanation: "Knowledge is power\u2026 stronger than my muscles"
+  - question: Being kind to others is important in everyday life
     correctAnswer: 1
-    answerExplanation: You understand the way of the forest
+    answerExplanation: A kind heart makes the forest a happier place
   typeSpeed: 0.05
 --- !u!4 &648612793
 Transform:
