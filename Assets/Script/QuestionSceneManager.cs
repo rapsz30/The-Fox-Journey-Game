@@ -9,8 +9,6 @@ public class QuestionSceneManager : MonoBehaviour
 {
     public enum State { Intro, Question, AnswerFeedback, Outro }
     private State currentState;
-
-    // Simpan skor agar bisa dibaca di scene FinalScore atau GameOverScreen
     public static int finalGemScore = 0;
 
     [Header("UI Panels")]
@@ -32,7 +30,7 @@ public class QuestionSceneManager : MonoBehaviour
     public Button resumeButton;      
     public Button restartButton;     
     public Button mainMenuButton;    
-    public Button muteToggleButton; // Drag tombol Mute/Unmute ke sini di Inspector
+    public Button muteToggleButton; 
 
     [Header("Data Settings")]
     public LevelStoryData levelStory;      
@@ -56,7 +54,6 @@ public class QuestionSceneManager : MonoBehaviour
         PrepareQuestions();
         SetupButtonListeners();
 
-        // Reset UI State
         pausePanel.SetActive(false);
         if(pauseButton != null) pauseButton.gameObject.SetActive(true);
         questionPanel.SetActive(false);
@@ -80,23 +77,17 @@ public class QuestionSceneManager : MonoBehaviour
         if (restartButton != null) restartButton.onClick.AddListener(RestartGame);
         if (mainMenuButton != null) mainMenuButton.onClick.AddListener(GoToMainMenu);
 
-        // Listener untuk tombol Mute/Unmute
         if (muteToggleButton != null) muteToggleButton.onClick.AddListener(ToggleMusic);
     }
-
-    // FUNGSI BARU: Mengontrol Mute/Unmute dan sinkronisasi dengan MusicButtonController
     public void ToggleMusic()
     {
         if (AudioManager.instance != null)
         {
-            // Panggil fungsi ToggleSound dari AudioManager.cs
             AudioManager.instance.ToggleSound();
 
-            // Cari MusicButtonController di scene dan minta dia ganti sprite (ikon)
             MusicButtonController musicBtn = FindObjectOfType<MusicButtonController>();
             if (musicBtn != null)
             {
-                // IsMuted() mengembalikan true jika suara mati, maka isMusicOn adalah kebalikannya
                 musicBtn.UpdateSprite(!AudioManager.instance.IsMuted());
             }
         }

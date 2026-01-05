@@ -8,8 +8,6 @@ public class QuestionData
     public bool correctAnswer;
     [TextArea] public string answerExplanation;
 }
-
-// Tambahkan class ini untuk menampung cerita Level
 [System.Serializable]
 public class LevelStoryData
 {

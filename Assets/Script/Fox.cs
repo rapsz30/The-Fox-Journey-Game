@@ -37,8 +37,6 @@ public class Fox : MonoBehaviour
 void Update()
     {
         dirX = Input.GetAxisRaw("Horizontal") * moveSpeed;
-
-        // MODIFIKASI: Menambahkan input W dan Arrow Up untuk melompat
         if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) 
             && rb.velocity.y == 0 && !isHurting)
         {

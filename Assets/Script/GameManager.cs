@@ -36,8 +36,7 @@ public class GameManager : MonoBehaviour
 public void AddScore(int points)
     {
         score += points;
-        finalCherryScore = score; // Simpan ke variabel static
-        UpdateScoreUI();
+        finalCherryScore = score;        UpdateScoreUI();
     }
 
     public void UpdateScoreUI()

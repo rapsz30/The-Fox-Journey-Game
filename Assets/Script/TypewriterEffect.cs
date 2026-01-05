@@ -34,7 +34,6 @@ public class StoryTypewriter : MonoBehaviour
 
     void Update()
     {
-        // Klik untuk skip
         if (Input.GetMouseButtonDown(0) && isTyping)
         {
             SkipTyping();
@@ -45,7 +44,6 @@ public class StoryTypewriter : MonoBehaviour
     {
         isTyping = true;
 
-        // Pisah per kalimat
         string[] sentences = fullStory.Split('.');
 
         foreach (string sentence in sentences)
